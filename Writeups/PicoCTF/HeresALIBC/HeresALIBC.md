@@ -1,6 +1,42 @@
 # Here's a LIBC
 ## Write-up of the PicoCTF Binary Exploitation Challenge
 
+
 <img	src="Challenge Description.png"
 		alt="Challenge Description"
 />
+
+
+### Setup
+
+3 files are provided to us for the challenge and the address
+to the server is also provided.
+
+Lets download the files and try to run the binary
+
+<img	src="Setup0.png"
+		alt="Challenge Description"
+/>
+
+We get a crash
+This occurs because our linker is a newer version than the libc provided
+
+<img	src="Setup1.png"
+		alt="Challenge Description"
+/>
+
+
+We can fix this using pwninit which will automatically take care of this
+
+<img	src="Setup2.png"
+		alt="Challenge Description"
+/>
+
+This fixed the problem
+
+<img	src="Setup3.png"
+		alt="Challenge Description"
+/>
+
+
+### Analyis
