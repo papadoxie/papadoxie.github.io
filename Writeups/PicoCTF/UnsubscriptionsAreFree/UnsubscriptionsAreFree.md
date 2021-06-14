@@ -1,6 +1,6 @@
 << [Back to Home](https://papadoxie.github.io)
 
-# Unsubscriptions Are Free (PicoCTF)
+# Unsubscriptions Are Free
 ## Write-up of the PicoCTF Binary Exploitation Challenge
 
 <img	src="Challenge Description.png"

@@ -1,6 +1,6 @@
 << [Back to Home](https://papadoxie.github.io)
 
-# Cache Me Outside (PicoCTF)
+# Cache Me Outside
 ## Write-up of the PicoCTF Binary Exploitation Challenge
 
 <img	src="Challenge Description.png"
